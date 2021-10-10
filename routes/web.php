@@ -25,5 +25,10 @@ Route::get('/', function () {
 
 /** Administrator **/
 Route::get('/admin/login', [AdminAuthController::class,'login']);
-Route::get('/admin/dashboard', [AdminStoreController::class,'dashboard']);
-Route::get('/admin/dashboard/orders', [AdminStoreController::class,'getOrders']);
+Route::post('/admin/login/validate', [AdminAuthController::class,'validateSession']);
+Route::get('/admin/login/off', [AdminAuthController::class,'logout']);
+
+Route::group(['middleware' => 'auth:administrator'], function() {
+    Route::get('/admin/dashboard', [AdminStoreController::class,'dashboard']);
+    Route::get('/admin/dashboard/orders', [AdminStoreController::class,'getOrders']);
+});

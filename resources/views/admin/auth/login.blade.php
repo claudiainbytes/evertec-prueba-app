@@ -14,7 +14,7 @@
                                         <div class="text-center">
                                                 <h1 class="h4 text-gray-900 mb-4">BIENVENIDO</h1>
                                         </div>
-                                        <form action="{{ url('/admin/login/validar') }}" method="post" class="user inicio-sesion needs-validation" novalidate>
+                                        <form action="{{ url('/admin/login/validate') }}" method="post" class="user inicio-sesion needs-validation" novalidate>
                                                 {{ csrf_field() }}
                                                 <div class="form-group">
                                                         <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="E-mail" value="{{ old('email') }}" id="email" placeholder="E-mail" name="email"  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
