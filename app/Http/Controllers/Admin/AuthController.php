@@ -11,6 +11,6 @@ class AuthController extends Controller
     public function login()
     {
         $data = (object)[];
-        return view('admin.login', [ 'data' => $data ]);
+        return view('admin.auth.login', [ 'data' => $data ]);
     }
 }

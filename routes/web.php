@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\StoreController as AdminStoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,5 @@ Route::get('/', function () {
 
 /** Administrator **/
 Route::get('/admin/login', [AdminAuthController::class,'login']);
+Route::get('/admin/dashboard', [AdminStoreController::class,'dashboard']);
+Route::get('/admin/dashboard/orders', [AdminStoreController::class,'getOrders']);

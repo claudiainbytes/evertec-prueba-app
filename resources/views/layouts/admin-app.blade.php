@@ -13,7 +13,7 @@
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-    <title>{{ env('APP_TITLE') }}</title>
+    <title>{{ env('APP_NAME') }}</title>
     <!-- CSS -->
     <link href="{{url('/')}}/sb-vendors/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="{{url('/')}}/sb-vendors/css/webfont-nunito.min.css" rel="stylesheet">
