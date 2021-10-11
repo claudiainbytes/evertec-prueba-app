@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use Config;
 use App\Models\Administrator;
+use App\Models\Order;
 use Auth;
 use Route;
 
@@ -29,6 +30,8 @@ class StoreController extends Controller
         $data->records = [];
         if (Auth::guard('administrator')->check()) {
             $data->user = Auth::guard('administrator')->user();
+            $data->records = Order::orderBy('created_at','desc')->simplePaginate(5);
+            $data->numRecords = Order::count();
         }  
         return view('admin.store.orders.index', [ 'data' => $data ]);
     }

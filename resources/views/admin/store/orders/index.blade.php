@@ -30,36 +30,33 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Nombres</th>
-                        <th scope="col">Apellidos</th>
                         <th scope="col">Email</th>
-                        <th scope="col">País</th>
-                        <th scope="col">Fecha Registro</th>
-                        <th scope="col">Acción</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Estado</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Nombres</th>
-                        <th scope="col">Apellidos</th>
                         <th scope="col">Email</th>
-                        <th scope="col">País</th>
-                        <th scope="col">Fecha Registro</th>
-                        <th scope="col">Acción</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Estado</th>
                     </tr>
                   </tfoot>
                   <tbody>
                     @foreach($data->records as $k => $v)
                     <tr>
                         <th scope="row">{{ $v->id }}</th>
-                        <td>{{ $v->nombres }}</td>
-                        <td>{{ $v->apellidos }}</td>
-                        <td>{{ $v->email }}</td>
-                        <td>{{ $v->pais }}</td>
+                        <td>{{ $v->customer_name }}</td>
+                        <td>{{ $v->customer_email }}</td>
+                        <td>{{ $v->customer_mobile }}</td>
                         <td>{{ $v->created_at }}</td>
-                        <td>Ver Perfil</td>
+                        <td>{{ $v->status }}</td>
                     </tr>
                     @endforeach
                   </tbody>
@@ -69,7 +66,7 @@
               <div class="row">
                 <div class="col-12 mb-3">
                   <div class="d-flex justify-content-center">
-                    
+                  {{ $data->records->render() }}
                   </div>  
                 </div>
               </div>
