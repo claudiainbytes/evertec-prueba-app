@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\PlaceToPayService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
@@ -11,89 +12,6 @@ use Illuminate\Support\Facades\URL;
 
 class OrderController extends Controller
 {
-
-    /**
-     * Get credentials
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function getCredentials()
-    {
-        $seed = date('c');
-        $secretKey = env('PLACE_TO_PAY_SECRET_KEY');
-
-        if (function_exists('random_bytes')) {
-            $nonce = bin2hex(random_bytes(16));
-        } elseif (function_exists('openssl_random_pseudo_bytes')) {
-            $nonce = bin2hex(openssl_random_pseudo_bytes(16));
-        } else {
-            $nonce = mt_rand();
-        }
-        
-        $nonceBase64 = base64_encode($nonce);
-        $tranKey = base64_encode(sha1($nonce . $seed . $secretKey, true));
-
-        $credentials = array(
-            'seed' => $seed,
-            'login' => env('PLACE_TO_PAY_LOGIN'),
-            'tranKey' => $tranKey,
-            'nonce' =>  $nonceBase64
-        );
-
-        return $credentials;
-    }    
-
-    /**
-     * Create request payment gateway
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function createRequest(Request $request, Order $order)
-    {
-        $endpoint = env('PLACE_TO_PAY_API_URL').'/api/session';
-        $returnURL = url('orders/response/'.$order->id);
-
-        $credentials = $this->getCredentials();
-
-        $response = Http::post( $endpoint, [
-                'auth' => $credentials,
-                'payment' => [
-                    'reference' => $order->id,
-                    'description' => $request->product_name.' '.$request->product_price,
-                    'amount' => [
-                        'currency' => 'COP',
-                        'total' => $request->product_price,
-                ],
-            ],
-            'expiration' => date('c', strtotime('+1 hour')),
-            'returnUrl' => $returnURL,
-            'ipAddress' => '127.0.0.1',
-            'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
-        ]);
-
-        return $response->json();
-    }
-
-    /**
-     * Get request information
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function getRequestInfo($requestId)
-    {
-        $endpoint = env('PLACE_TO_PAY_API_URL').'/api/session/'.$requestId;
-
-        $credentials = $this->getCredentials();
-
-        $response = Http::post( $endpoint, [
-                'auth' => $credentials
-        ]);
-
-        return $response->json();
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -130,8 +48,8 @@ class OrderController extends Controller
     {
         $request->request->add(['status' => "CREATED"]);
         $order = $this->store($request);
-        $response = $this->createRequest($request, $order);
-        //dd($response);
+        $response = PlaceToPayService::createRequest($request, $order->id);
+
         if ($response['status']['status'] == "OK") {
             $order->requestId = $response['requestId'];
             $order->processURL = $response['processUrl'];
@@ -164,14 +82,14 @@ class OrderController extends Controller
     {
         $data = (object)[];
         $order = Order::find($orderID);  
-        $response = $this->getRequestInfo($order->requestId);
+        $response = PlaceToPayService::getRequestInfo($order->requestId);
         $order->status = $response['status']['status'];
         $order->save();
         switch($order->status){
-            case "CREATED":
+            case "PENDING":
                 $data->estado_compra = "Pendiente";
                 break;
-            case "PAYED":
+            case "APPROVED":    
                 $data->estado_compra = "Pagada";
                 break;
             case "REJECTED":
